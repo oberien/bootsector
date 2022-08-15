@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 #![warn(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
@@ -37,7 +39,11 @@
 //! # }
 //! ```
 
-use std::io;
+extern crate alloc;
+
+use alloc::string::String;
+use alloc::vec::Vec;
+use acid_io as io;
 
 mod gpt;
 mod le;
@@ -133,9 +139,9 @@ impl Default for Options {
 /// # Returns
 ///
 /// * A possibly empty list of partitions.
-/// * `ErrorKind::NotFound` if the boot magic is not found,
-///        or you asked for partition types that are not there
-/// * `ErrorKind::InvalidData` if anything is not as we expect,
+/// * `ErrorKind::InvalidData` if the boot magic is not found,
+///        or you asked for partition types that are not there,
+///        or if anything is not as we expect,
 ///       including it looking like there should be GPT but its magic is missing.
 /// * Other IO errors directly from the underlying reader, including `UnexpectedEOF`.
 pub fn list_partitions<R>(reader: R, options: &Options) -> io::Result<Vec<Partition>>
@@ -147,7 +153,7 @@ where
         reader.read_exact_at(0, &mut disc_header)?;
 
         if 0x55 != disc_header[510] || 0xAA != disc_header[511] {
-            return Err(io::ErrorKind::NotFound.into());
+            return Err(io::ErrorKind::InvalidData.into());
         }
 
         mbr::parse_partition_table(&disc_header)?
@@ -158,7 +164,7 @@ where
         _ => {
             return match options.mbr {
                 ReadMBR::Modern => Ok(header_table),
-                ReadMBR::Never => Err(io::ErrorKind::NotFound.into()),
+                ReadMBR::Never => Err(io::ErrorKind::InvalidData.into()),
             }
         }
     }

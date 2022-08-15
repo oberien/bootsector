@@ -16,4 +16,12 @@ edition = "2018"
 
 [dependencies]
 crc = "2"
-positioned-io2 = "0.3"
+positioned-io2 = { version = "0.3", default-features = false }
+acid_io = { version = "0.1.0", default-features = false }
+
+[features]
+default = ["std"]
+std = ["positioned-io2/std", "acid_io/std"]
+
+[patch.crates-io]
+positioned-io2 = { git = "https://github.com/oberien/positioned-io2", branch = "no_std" }

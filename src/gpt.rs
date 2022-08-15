@@ -1,8 +1,11 @@
-use std::convert::TryFrom;
-use std::convert::TryInto;
-use std::io;
-use std::io::Error;
-use std::io::ErrorKind::InvalidData;
+use core::convert::TryFrom;
+use core::convert::TryInto;
+use alloc::{vec, format};
+use alloc::vec::Vec;
+use alloc::string::String;
+use acid_io as io;
+use acid_io::Error;
+use acid_io::ErrorKind::InvalidData;
 
 use crc::Crc;
 

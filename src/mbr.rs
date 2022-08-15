@@ -1,7 +1,9 @@
-use std::convert::TryFrom;
-use std::io::Error;
-use std::io::ErrorKind;
-use std::io::Result;
+use core::convert::TryFrom;
+use alloc::format;
+use alloc::vec::Vec;
+use acid_io::Error;
+use acid_io::ErrorKind;
+use acid_io::Result;
 
 use crate::le;
 use crate::Partition;
